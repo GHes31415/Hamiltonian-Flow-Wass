@@ -1,6 +1,13 @@
 import torch
 
 def set_params(potential_type, dim=2, device=None):
+    '''
+    Set the parameters.
+    First, set the device.
+    Reference distribution is Gaussian.
+    Set potential type
+    dimension of the problem
+    '''
     params = dict()
     if device:
         params['device'] = device
