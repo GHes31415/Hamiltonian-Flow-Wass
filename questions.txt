@@ -1,0 +1,8 @@
+Notes of questions
+
+What is init_b?
+Whas is quadratic_init? Is it a quadratic initialization for phi?
+Why does numerical_step does not include the derivative of the metric?
+What is HO_sol?
+Is the function PreTrain build?
+flow and flow_auxil are not initialized to be the same networks. Should they be the same networks?

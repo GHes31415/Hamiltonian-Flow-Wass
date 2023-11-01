@@ -31,6 +31,9 @@ def create_param_rec(niter, nrec, n_params):
     return theta_rec, p_rec, errrel_rec
 
 def variable_init(params, init_func, niter, dt, T):
+    '''
+    niter,dt and T are not used!
+    '''
     if params['net_type']=='mlp':
         flow = MLP_shift(params).to(params['device'])
         flow_auxil = MLP_shift(params).to(params['device'])
@@ -39,8 +42,31 @@ def variable_init(params, init_func, niter, dt, T):
         flow_auxil = NormalizingFlow(params['dim'], params['flow_length']).to(params['device'])
     pstate = get_init_p(flow, init_func, params['dim'], params['device'])
     eta = None
+    # Where is the function PreTrain defined?
     #PreTrain(flow, params, 1500, 0.003, Gauss_density)
     return flow, flow_auxil, pstate, eta
+
+# TODO
+
+# def varaible_init_train(params,samples):
+
+#     if params['net_type']=='mlp':
+#         flow = MLP_shift(params).to(params['device'])
+#         flow_auxil = MLP_shift(params).to(params['device'])
+#     elif params['net_type']=='flow':
+#         flow = NormalizingFlow(params['dim'], params['flow_length']).to(params['device'])
+#         flow_auxil = NormalizingFlow(params['dim'], params['flow_length']).to(params['device'])
+#     pstate =  torch.zeros_like(samples).to(params['device'])
+#     thetastate = PreTrain(flow,samples,params)
+
+#     eta = None
+
+#     return flow, flow_auxil, pstate, thetastate,eta
+
+# def PreTrain(flow,samples,params):
+#     #TODO define training for normalizing flow
+#     return 0
+
 
 def HS_init(params):
     if params['potential_type']=='quadratic':
@@ -57,9 +83,19 @@ def HS_init(params):
         potential_func = entropy_potential(params['potential_coef']).potential_eval
     elif params['potential_type']=='combine':
         potential_func = comb_potential(params['qw'], params['iw'], params['potential_quad'], params['potential_interact']).potential_eval
+    # quadrac_init defines a function a qudratic function with Hessian phiweight pos defines the sign of the quadratic form
     phi_init = quadratic_init(params['phiweight'], params["phi_pos"]).func
+    '''
+    Hamiltonian_System is a class defined in hamiltonian.py, which contains the following attributes:
+    - potential_eval:  evaluate the potential
+    - Hamiltonian_eval: evaluate the Hamiltonian returns the kinetic energy and potential energy
+    - grad_potential: evaluate the gradient of the potential
+    - numerical_step: the numerical step of the Hamiltonian system
+    - numerical_init: the numerical initial condition of the Hamiltonian system
+    - numerical_solve: the numerical solution of the Hamiltonian system
+    '''
     H_system = Hamiltonian_System(params['dim'], potential_func, phi_init)
-    
+    # Not sure what this is doing
     ho_sol = HO_sol(params, H_system)
     
     return ho_sol, H_system

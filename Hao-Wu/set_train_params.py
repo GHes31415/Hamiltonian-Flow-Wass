@@ -50,4 +50,6 @@ def set_params(potential_type, dim=2, device=None):
     params['p_coef'] = 1.0
     params['c'] = torch.zeros(dim).to(params['device'])
     params['phiweight'] = torch.eye(dim).to(params['device'])
+    # Modification 
+    params['phi_pos'] = torch.tensor([1.0]).to(params['device'])
     return params

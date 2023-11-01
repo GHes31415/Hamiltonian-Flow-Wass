@@ -24,9 +24,14 @@ class Hamiltonian_System(object):
             return self.potential(xs, log_jac)
     
     def Hamiltonian_eval(self, flow, flow_auxil, eta, samples):
+        '''
+        Evaluation of the Hamiltonian, it returns the kinetic energy and the potential energy
+        '''
         zero_vec = torch.zeros_like(eta).to(self.device)
+        '''Evaluation of kinetic energy'''
         _, KE, _ = G_quadratic_loss(flow, flow_auxil, eta, zero_vec, samples)
         xs, log_jac = flow(samples)
+        '''Evaluation of potential energy'''
         PE = self.potential_eval(xs, log_jac)
         return KE, PE
         
@@ -51,6 +56,7 @@ class Hamiltonian_System(object):
         if phi_init==None:
             phi_init=self.phi_zero
         xs.requires_grad=True
+        # Sum before taking gradient
         pe = torch.sum(phi_init(xs))
         grad_phi = torch.autograd.grad(pe, xs,
                            allow_unused=True, retain_graph=False, create_graph=True)[0]
@@ -204,6 +210,12 @@ def dp_evaluate(H_system, flow, flow_auxil, pstate, eta, samples, samples_log_rh
 
 
 def G_quadratic_loss(flow, flow_auxil, xi, pstate, samples):
+    '''
+    flow: weights of the flow
+    flow_auxil: unattached copy of the weights of the flow
+    xi: 
+    
+    '''
     xs, _ = flow(samples)
     copy_net(flow, flow_auxil)
     xs_auxil, _ = flow_auxil(samples)
